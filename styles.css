@@ -303,3 +303,7 @@ body { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 9%, 
 .os h3 em { font-style: normal; font-size: 0.7rem; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 .os ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 0.88rem; line-height: 1.35; color: var(--fg); }
 .os li::marker { color: var(--accent); font-weight: 700; }
+
+.hero .links { gap: 6px 14px; }
+.how .install { padding: 0; border: 0; background: none; box-shadow: none; }
+#instBtn { font-weight: 600; }

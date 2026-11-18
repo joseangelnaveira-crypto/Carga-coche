@@ -186,7 +186,7 @@
 
   function settingsHtml() {
     return '<div class="page"><div class="head"><button type="button" class="back" id="done" aria-label="Volver">‹</button><div class="t">Ajustes</div></div>' +
-      '<h2 class="s">Cuándo enchufar</h2>' + plugBody() + '<h2 class="s">Coche</h2>' + carBody() + '<h2 class="s">Cargador</h2>' + pwBody() + '<h2 class="s">Tarifa e impuestos</h2>' + tariffBody() + '<h2 class="s">Instalar en el móvil</h2>' + installBody() + '<h2 class="s">Acerca de</h2>' + aboutBody() +
+      '<h2 class="s">Cuándo enchufar</h2>' + plugBody() + '<h2 class="s">Coche</h2>' + carBody() + '<h2 class="s">Cargador</h2>' + pwBody() + '<h2 class="s">Tarifa e impuestos</h2>' + tariffBody() + '<h2 class="s">Instalar la app y favoritos</h2>' + installBody() + '<h2 class="s">Acerca de</h2>' + aboutBody() +
       '<div class="foot"><button type="button" class="next" id="done2">Listo</button>' +
       '<button type="button" class="del" id="del">' + (delArm ? "Pulsa otra vez para borrar" : "Borrar esta configuración") + '</button></div></div>';
   }
@@ -288,7 +288,7 @@
       '<p class="msg ' + o.kind + '">' + o.text + '</p>' +
       '<div class="costline"><span class="cost">' + money(o.total) + '</span><span class="break">con impuestos' + (o.chargedMin > 0 ? ' · ' + durText(o.chargedMin) + ' · ' + kwhText(o.kwhGridDone) : '') + '</span></div>' +
       tip + links +
-      '<div class="links"><button type="button" class="link" id="simBtn">Probar otra hora de enchufe</button><button type="button" class="link" id="howBtn">Cómo se calcula</button></div>';
+      '<div class="links"><button type="button" class="link" id="simBtn">Otra hora de enchufe</button><button type="button" class="link" id="howBtn">Cómo se calcula</button>' + (isStandalone() ? '' : '<button type="button" class="link" id="instBtn">Instalar app</button>') + '</div>';
   }
 
 
@@ -398,23 +398,17 @@
   function isStandalone() { return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true; }
   function isIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); }
   function installBody() {
-    var ios = isIOS();
+    var ios = isIOS(), android = !ios && /android/i.test(navigator.userAgent), pc = !ios && !android;
+    var box = function (me, title, items) { return '<div class="os' + (me ? ' me' : '') + '"><h3>' + title + (me ? ' <em>tu dispositivo</em>' : '') + '</h3><ol>' + items.map(function (t) { return '<li>' + t + '</li>'; }).join("") + '</ol></div>'; };
     var steps = {
-      ios: '<div class="os' + (ios ? ' me' : '') + '"><h3>iPhone y iPad' + (ios ? ' <em>tu móvil</em>' : '') + '</h3><ol>' +
-        '<li>Abre esta página en <b>Safari</b> (no en Chrome ni dentro de otra app).</li>' +
-        '<li>Toca <b>Compartir</b>, el cuadrado con una flecha hacia arriba.</li>' +
-        '<li>Desliza y elige <b>«Añadir a pantalla de inicio»</b>.</li>' +
-        '<li>Toca <b>«Añadir»</b>. Ábrela desde el icono nuevo.</li></ol></div>',
-      and: '<div class="os' + (!ios ? ' me' : '') + '"><h3>Android' + (!ios ? ' <em>tu móvil</em>' : '') + '</h3><ol>' +
-        '<li>Abre esta página en <b>Chrome</b>.</li>' +
-        '<li>Toca el menú <b>⋮</b> de arriba a la derecha.</li>' +
-        '<li>Elige <b>«Instalar aplicación»</b> o «Añadir a pantalla de inicio».</li>' +
-        '<li>Confirma con <b>«Instalar»</b>. Ábrela desde el icono nuevo.</li></ol></div>'
+      ios: box(ios, "iPhone y iPad", ['Abre esta página en <b>Safari</b> (no en Chrome ni dentro de otra app).', 'Toca <b>Compartir</b>, el cuadrado con una flecha hacia arriba.', 'Desliza y elige <b>«Añadir a pantalla de inicio»</b>.', 'Toca <b>«Añadir»</b>. Ábrela desde el icono nuevo.']),
+      and: box(android, "Android", ['Abre esta página en <b>Chrome</b>.', 'Toca el menú <b>⋮</b> de arriba a la derecha.', 'Elige <b>«Instalar aplicación»</b> o «Añadir a pantalla de inicio».', 'Confirma con <b>«Instalar»</b>. Ábrela desde el icono nuevo.']),
+      pc: box(pc, "Ordenador", ['<b>Favoritos:</b> pulsa <b>Ctrl + D</b> (en Mac, <b>Cmd + D</b>) y guarda la página.', '<b>Instalar como app</b> (Chrome o Edge): pulsa el icono de instalar que sale a la derecha de la barra de direcciones, o el menú ⋮ → «Instalar Carga del coche».', '<b>Safari en Mac:</b> Archivo → «Añadir al Dock».'])
     };
     var h = '<div class="card install">';
-    if (isStandalone()) return h + '<p class="hint"><b>Ya está instalada</b> en este móvil. Funciona sin conexión.</p></div>';
-    if (deferredPrompt) h += '<button type="button" class="next" id="installBtn">Instalar la app</button><p class="hint">Se guarda en el móvil y funciona sin conexión. O sigue estos pasos:</p>';
-    h += ios ? steps.ios + steps.and : steps.and + steps.ios;
+    if (isStandalone()) return h + '<p class="hint"><b>Ya está instalada</b> en este dispositivo. Funciona sin conexión.</p></div>';
+    if (deferredPrompt) h += '<button type="button" class="next" id="installBtn">Instalar la app</button><p class="hint">Se guarda en el dispositivo y funciona sin conexión. O sigue estos pasos:</p>';
+    h += ios ? steps.ios + steps.and + steps.pc : android ? steps.and + steps.ios + steps.pc : steps.pc + steps.and + steps.ios;
     h += '<p class="hint">Si ves una versión antigua, cierra la app del todo y ábrela dos veces con conexión.</p>';
     return h + '</div>';
   }
@@ -435,11 +429,12 @@
     if (!t) return;
     var id = t.id;
     if (id === "sheetOk") { applyWheel(); return; }
-    if (id === "installBtn") { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; draw(true); } return; }
+    if (id === "installBtn") { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; $("info").hidden = true; draw(true); } return; }
     if (id === "simBtn") { openWheel("sim"); return; }
     if (id === "tipBtn") { sim = t.getAttribute("data-t"); refresh(); return; }
     if (id === "simOff") { sim = null; refresh(); return; }
-    if (id === "howBtn") { $("howBody").innerHTML = explainHtml(); $("info").hidden = false; return; }
+    if (id === "howBtn") { $("infoTitle").textContent = "Cómo se calcula"; $("howBody").innerHTML = explainHtml(); $("info").hidden = false; return; }
+    if (id === "instBtn") { $("infoTitle").textContent = "Instalar la app"; $("howBody").innerHTML = installBody(); $("info").hidden = false; return; }
     if (id === "infoOk") { $("info").hidden = true; return; }
     if (id === "sheetCancel") { closeWheel(); return; }
     if (t.hasAttribute("data-wheel")) { openWheel(t.getAttribute("data-wheel")); return; }
