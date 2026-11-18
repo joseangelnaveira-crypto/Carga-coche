@@ -28,7 +28,7 @@ img { max-width: 100%; }
   --warn-soft: #fbecd8;
   --c-cur: #1c8a4f; --c-cur-soft: #d9efe3;
   --c-tgt: #2a62c9; --c-tgt-soft: #dde8fa;
-  --c-need: #d4571f; --c-need-soft: #fde6d9;
+  --c-need: #b8456b; --c-need-soft: #fbe4ec;
   --c-start: #0a7a8f; --c-start-soft: #dcf0f4;
   --c-margin: #b06100; --c-margin-soft: #fbecd8;
   --font-display: "Space Grotesk", system-ui, sans-serif;
@@ -40,7 +40,7 @@ img { max-width: 100%; }
     --accent: #4cc3d9; --accent-fg: #06222a; --accent-soft: #123b46;
     --good: #5fd09b; --good-soft: #173a2b; --warn: #f0a95a; --warn-soft: #3a2a12;
     --c-cur: #5fd09b; --c-cur-soft: #173a2b; --c-tgt: #7aa7f5; --c-tgt-soft: #17284a;
-    --c-need: #ff9a62; --c-need-soft: #3d2214; --c-start: #4cc3d9; --c-start-soft: #123b46;
+    --c-need: #ff8fb0; --c-need-soft: #3d1a28; --c-start: #4cc3d9; --c-start-soft: #123b46;
     --c-margin: #f0a95a; --c-margin-soft: #3a2a12;
     color-scheme: dark;
   }
@@ -50,7 +50,7 @@ img { max-width: 100%; }
   --accent: #4cc3d9; --accent-fg: #06222a; --accent-soft: #123b46;
   --good: #5fd09b; --good-soft: #173a2b; --warn: #f0a95a; --warn-soft: #3a2a12;
   --c-cur: #5fd09b; --c-cur-soft: #173a2b; --c-tgt: #7aa7f5; --c-tgt-soft: #17284a;
-  --c-need: #ff9a62; --c-need-soft: #3d2214; --c-start: #4cc3d9; --c-start-soft: #123b46;
+  --c-need: #ff8fb0; --c-need-soft: #3d1a28; --c-start: #4cc3d9; --c-start-soft: #123b46;
   --c-margin: #f0a95a; --c-margin-soft: #3a2a12;
   color-scheme: dark;
 }
@@ -62,7 +62,7 @@ body {
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+
 button { font: inherit; cursor: pointer; color: inherit; }
 input, select { font: inherit; color: var(--fg); }
 input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -294,7 +294,8 @@ html, body, button, .val.tap { touch-action: manipulation; }
 button, .val.tap, .eyebrow, .lbl, .val { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
 /* ===== Estética v3: fondo suave, instrucciones de instalación ===== */
-body { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 9%, var(--bg)), var(--bg) 55%) fixed; }
+html { background: var(--bg); }
+body { background: linear-gradient(180deg, var(--bg), color-mix(in srgb, var(--accent) 7%, var(--bg))); }
 .ctl .card.cur, .ctl .card.tgt, .ctl .card.need { border-width: 1.5px; }
 .install .next { height: 50px; font-size: 1rem; }
 .os { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
@@ -307,3 +308,6 @@ body { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 9%, 
 .hero .links { gap: 6px 14px; }
 .how .install { padding: 0; border: 0; background: none; box-shadow: none; }
 #instBtn { font-weight: 600; }
+
+.hero .links { gap: 2px 12px; }
+.hero .link { font-size: 0.76rem; }
