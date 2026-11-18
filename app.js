@@ -66,9 +66,11 @@
       if (c.brand !== OTHER && !findModel(c.brand, c.model)) c.model = brandModels(c.brand)[0][0];
       return { id: p.id, name: String(p.name || "").slice(0, 120), c: c };
     });
+    S.startMode = "auto";
     S.active = (typeof saved.active === "string" && /^p\d+$/.test(saved.active)) ? saved.active : null;
     var p = findProfile(S.active);
     if (p) Object.keys(p.c).forEach(function (k) { S[k] = p.c[k]; });
+    S.startMode = "auto";
     if (S.brand !== OTHER) fixModel();
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
@@ -175,23 +177,13 @@
   }
 
   function plugBody() {
-    var seg = [["auto", "Mejor hora"], ["now", "Ahora"], ["manual", "Otra hora"]].map(function (o) { return '<button type="button" class="btn" data-set="startMode" data-v="' + o[0] + '" aria-pressed="' + (S.startMode === o[0]) + '">' + o[1] + '</button>'; }).join("");
-    var h = '<div class="card start"><div class="grid cols-3">' + seg + '</div>';
-    if (S.startMode === "auto") {
-      h += '<div class="mrow"><span class="lbl">Margen de seguridad</span><button type="button" class="btn" data-margin="-15" aria-label="Restar 15 minutos">−15</button><span class="v">' + num(S.margin, 0) + ' min</span><button type="button" class="btn" data-margin="15" aria-label="Sumar 15 minutos">+15</button></div>';
-      h += '<p class="hint">Calculo la hora de enchufe para que termine con este margen antes de la hora que necesitas.</p>';
-    } else if (S.startMode === "manual") {
-      h += '<div class="trow"><button type="button" class="btn" data-time="startAt" data-d="-60">−1 h</button><button type="button" class="btn" data-time="startAt" data-d="-15">−15</button><button type="button" class="val tap" data-wheel="startAt" aria-label="Elegir hora">' + S.startAt + '</button><button type="button" class="btn" data-time="startAt" data-d="15">+15</button><button type="button" class="btn" data-time="startAt" data-d="60">+1 h</button></div>';
-      h += '<p class="hint">Pones tú la hora de enchufe y la app te dice cómo queda.</p>';
-    } else {
-      h += '<p class="hint">Cargas desde este momento.</p>';
-    }
-    return h + '</div>';
+    return '<div class="card start"><div class="mrow"><span class="lbl">Terminar antes de la hora</span><button type="button" class="btn" data-margin="-15" aria-label="Restar 15 minutos">−15</button><span class="v">' + num(S.margin, 0) + ' min</span><button type="button" class="btn" data-margin="15" aria-label="Sumar 15 minutos">+15</button></div>' +
+      '<p class="hint">Calculo la hora de enchufe para que la carga termine estos minutos antes de la hora que necesitas. Es un colchón por si algo se retrasa. Para ver qué pasa si enchufas a otra hora, usa «Otra hora de enchufe» en la pantalla principal.</p></div>';
   }
 
   function settingsHtml() {
     return '<div class="page"><div class="head"><button type="button" class="back" id="done" aria-label="Volver">‹</button><div class="t">Ajustes</div></div>' +
-      '<h2 class="s">Cuándo enchufar</h2>' + plugBody() + '<h2 class="s">Coche</h2>' + carBody() + '<h2 class="s">Cargador</h2>' + pwBody() + '<h2 class="s">Tarifa e impuestos</h2>' + tariffBody() + '<details class="fold" id="instFold"' + (instOpen ? ' open' : '') + '><summary>Instalar la app y favoritos</summary>' + installBody() + '</details>' + '<h2 class="s">Acerca de</h2>' + aboutBody() +
+      '<h2 class="s">Margen de seguridad</h2>' + plugBody() + '<h2 class="s">Coche</h2>' + carBody() + '<h2 class="s">Cargador</h2>' + pwBody() + '<h2 class="s">Tarifa e impuestos</h2>' + tariffBody() + '<details class="fold" id="instFold"' + (instOpen ? ' open' : '') + '><summary>Instalar la app y favoritos</summary>' + installBody() + '</details>' + '<h2 class="s">Acerca de</h2>' + aboutBody() +
       '<div class="foot"><button type="button" class="next" id="done2">Listo</button>' +
       '<button type="button" class="del" id="del">' + (delArm ? "Pulsa otra vez para borrar" : "Borrar esta configuración") + '</button></div></div>';
   }
