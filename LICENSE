@@ -1,0 +1,20 @@
+Copyright (c) 2026 JANF. Todos los derechos reservados.
+Copyright (c) 2026 JANF. All rights reserved.
+
+Este software ("Carga del coche"), incluido su codigo fuente, diseno, textos e iconos,
+es propiedad de JANF. Se publica en este repositorio unicamente para que pueda usarse
+la aplicacion web. No se concede ningun permiso para copiar, modificar, redistribuir,
+publicar ni crear obras derivadas, total o parcialmente, sin autorizacion previa y por
+escrito de JANF.
+
+This software ("Carga del coche"), including its source code, design, texts and icons,
+is the property of JANF. It is published in this repository solely so that the web
+application can be used. No permission is granted to copy, modify, redistribute,
+publish or create derivative works, in whole or in part, without the prior written
+permission of JANF.
+
+Excepcion / Exception: las fuentes Inter y Space Grotesk de la carpeta /fonts no son
+propiedad de JANF y se distribuyen bajo SIL Open Font License 1.1
+(ver fonts/LICENSE-Inter.txt y fonts/LICENSE-SpaceGrotesk.txt).
+The Inter and Space Grotesk fonts in /fonts are not owned by JANF and are distributed
+under the SIL Open Font License 1.1.

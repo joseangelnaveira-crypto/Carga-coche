@@ -21,5 +21,6 @@ Cambia el número en `sw.js` (`const CACHE = "carga-coche-v2"`) y sube los archi
 - Sin servidores, sin cuentas, sin rastreo ni recursos externos (CSP estricta: todo se sirve desde el mismo origen).
 
 ## Licencias
+Copyright (c) 2026 JANF. Todos los derechos reservados (ver `LICENSE`). El codigo y el diseno no se pueden copiar ni reutilizar sin permiso.
 Fuentes Inter y Space Grotesk (SIL OFL 1.1), ver `fonts/LICENSE-*.txt`.
 Los precios de ejemplo y las capacidades de batería son orientativos.

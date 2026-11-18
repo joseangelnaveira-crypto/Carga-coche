@@ -423,7 +423,8 @@
   function aboutBody() {
     return '<div class="card"><p class="hint"><b>Valores orientativos.</b> Las horas y el coste dependen de tu coche, tu cargador y tu tarifa, y pueden diferir de la realidad. Comprueba siempre que el coche queda cargado.</p>' +
       '<p class="hint"><b>Privacidad.</b> No hay cuentas ni cookies, y no se envía ningún dato a ningún servidor. Lo que escribes se guarda solo en este dispositivo y puedes borrarlo con «Borrar esta configuración».</p>' +
-      '<p class="hint">Las capacidades de batería son valores útiles orientativos tomados de ev-database.org. Corresponden a una batería nueva: con el desgaste la capacidad baja y los cálculos se vuelven algo conservadores. Consulta la ficha de tu coche para el dato exacto.</p></div>';
+      '<p class="hint">Las capacidades de batería son valores útiles orientativos tomados de ev-database.org. Corresponden a una batería nueva: con el desgaste la capacidad baja y los cálculos se vuelven algo conservadores. Consulta la ficha de tu coche para el dato exacto.</p>' +
+      '<p class="hint copy">© 2026 JANF. Todos los derechos reservados. El código, el diseño y el icono no se pueden copiar ni reutilizar sin permiso.</p></div>';
   }
   window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); deferredPrompt = e; if (view === "settings") draw(true); });
   window.addEventListener("appinstalled", function () { deferredPrompt = null; if (view === "settings") draw(true); });

@@ -394,3 +394,5 @@ kbd { font: inherit; font-size: 0.78rem; font-weight: 600; padding: 1px 6px; bor
 .hint.warnhint b { color: inherit; }
 
 body { background: linear-gradient(180deg, var(--bg) 0, color-mix(in srgb, var(--accent) 7%, var(--bg)) 45%, var(--bg) 100%) no-repeat; background-size: 100% 100dvh; background-color: var(--bg); }
+
+.hint.copy { padding-top: 8px; border-top: 1px solid var(--line); font-size: 0.78rem; }
