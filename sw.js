@@ -1,6 +1,6 @@
 /* Service worker: guarda la app en el móvil para que funcione sin conexión.
    Para publicar una versión nueva, cambia el número de CACHE (p. ej. v2). */
-const CACHE = "carga-coche-v11";
+const CACHE = "carga-coche-v14";
 const ASSETS = [
   "./", "index.html", "styles.css", "app.js", "manifest.webmanifest",
   "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/apple-touch-icon.png",

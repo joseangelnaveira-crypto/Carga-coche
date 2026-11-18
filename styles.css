@@ -26,9 +26,9 @@ img { max-width: 100%; }
   --good-soft: #d9efe3;
   --warn: #a55306;
   --warn-soft: #fbecd8;
-  --c-cur: #1c8a4f; --c-cur-soft: #d9efe3;
-  --c-tgt: #2a62c9; --c-tgt-soft: #dde8fa;
-  --c-need: #b8456b; --c-need-soft: #fbe4ec;
+  --c-cur: #2a62c9; --c-cur-soft: #dde8fa;
+  --c-tgt: #1c8a4f; --c-tgt-soft: #d9efe3;
+  --c-need: #0a7a8f; --c-need-soft: #dcf0f4;
   --c-start: #0a7a8f; --c-start-soft: #dcf0f4;
   --c-margin: #b06100; --c-margin-soft: #fbecd8;
   --font-display: "Space Grotesk", system-ui, sans-serif;
@@ -39,8 +39,8 @@ img { max-width: 100%; }
     --bg: #0d1a20; --surface: #14262e; --fg: #e5eef2; --muted: #aabdc7; --line: #26404c;
     --accent: #4cc3d9; --accent-fg: #06222a; --accent-soft: #123b46;
     --good: #5fd09b; --good-soft: #173a2b; --warn: #f0a95a; --warn-soft: #3a2a12;
-    --c-cur: #5fd09b; --c-cur-soft: #173a2b; --c-tgt: #7aa7f5; --c-tgt-soft: #17284a;
-    --c-need: #ff8fb0; --c-need-soft: #3d1a28; --c-start: #4cc3d9; --c-start-soft: #123b46;
+    --c-cur: #7aa7f5; --c-cur-soft: #17284a; --c-tgt: #5fd09b; --c-tgt-soft: #173a2b;
+    --c-need: #4cc3d9; --c-need-soft: #123b46; --c-start: #4cc3d9; --c-start-soft: #123b46;
     --c-margin: #f0a95a; --c-margin-soft: #3a2a12;
     color-scheme: dark;
   }
@@ -49,8 +49,8 @@ img { max-width: 100%; }
   --bg: #0d1a20; --surface: #14262e; --fg: #e5eef2; --muted: #aabdc7; --line: #26404c;
   --accent: #4cc3d9; --accent-fg: #06222a; --accent-soft: #123b46;
   --good: #5fd09b; --good-soft: #173a2b; --warn: #f0a95a; --warn-soft: #3a2a12;
-  --c-cur: #5fd09b; --c-cur-soft: #173a2b; --c-tgt: #7aa7f5; --c-tgt-soft: #17284a;
-  --c-need: #ff8fb0; --c-need-soft: #3d1a28; --c-start: #4cc3d9; --c-start-soft: #123b46;
+  --c-cur: #7aa7f5; --c-cur-soft: #17284a; --c-tgt: #5fd09b; --c-tgt-soft: #173a2b;
+  --c-need: #4cc3d9; --c-need-soft: #123b46; --c-start: #4cc3d9; --c-start-soft: #123b46;
   --c-margin: #f0a95a; --c-margin-soft: #3a2a12;
   color-scheme: dark;
 }
@@ -363,3 +363,18 @@ kbd { font: inherit; font-size: 0.78rem; font-weight: 600; padding: 1px 6px; bor
 .mbar { width: 64px; }
 .ctxbtn .m { font-size: 0; }
 .ctxbtn .m::after { content: "\25BE"; font-size: 0.9rem; }
+
+/* Boton Instalar dentro del resultado (esquina superior) */
+.hero .instbtn { height: 30px; padding: 0 11px 0 9px; border-radius: 999px; font-size: 0.8rem; gap: 5px; box-shadow: none; background: var(--accent); color: var(--accent-fg); }
+.hero .ebrow { align-items: flex-start; }
+.hero .links { align-items: center; }
+.hero .links .mini { margin-left: auto; }
+@media (max-height: 640px) { .hero .instbtn { height: 28px; } }
+.ctxbtn .m { font-size: 0.8rem; }
+.ctxbtn .m::after { content: none; }
+
+.mbar .ma { background: var(--c-cur); }
+.mbar .mb { background: var(--c-tgt); }
+
+.ctxbtn .appico { width: 26px; height: 26px; border-radius: 7px; vertical-align: -8px; margin-right: 8px; flex: none; }
+@media (max-height: 640px) { .ctxbtn .appico { width: 24px; height: 24px; vertical-align: -7px; } }

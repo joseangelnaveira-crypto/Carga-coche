@@ -202,8 +202,8 @@
 
     function mainHtml() {
     var tb = function (key, arr) { return arr.map(function (o) { return '<button type="button" class="btn" data-time="' + key + '" data-d="' + o[0] + '">' + o[1] + '</button>'; }).join(""); };
-    return '<div class="ctxrow"><button type="button" class="ctxbtn" id="carbtn"><span><svg class="car" viewBox="0 0 28 16" width="26" height="15" aria-hidden="true"><path d="M3 11.5 5 6.5Q6 4.5 9 4.5H17Q19 4.5 20.5 6.5L24 8.5Q26 9 26 11.5V12.5H3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="8" cy="13" r="2.3" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/><circle cx="21" cy="13" r="2.3" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/></svg> ' + esc(profileName()) + '</span><span class="m">Cambiar</span></button>' +
-      (isStandalone() ? '' : '<button type="button" class="instbtn" id="instBtn" aria-label="Instalar la app"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg><span>Instalar</span></button>') + '<button type="button" class="setbtn tmp" id="refbtn" aria-label="Refrescar" title="Refrescar">&#8635;</button><button type="button" class="setbtn" id="setbtn" aria-label="Ajustes" title="Ajustes">Ajustes</button></div><div class="hero" id="res" aria-live="polite"></div>' +
+    return '<div class="ctxrow"><button type="button" class="ctxbtn" id="carbtn"><span><img class="appico" src="icons/icon.svg" width="26" height="26" alt=""> ' + esc(profileName()) + '</span><span class="m">Cambiar</span></button>' +
+      '<button type="button" class="setbtn tmp" id="refbtn" aria-label="Refrescar" title="Refrescar">&#8635;</button><button type="button" class="setbtn" id="setbtn" aria-label="Ajustes" title="Ajustes">Ajustes</button></div><div class="hero" id="res" aria-live="polite"></div>' +
       '<div class="ctl">' +
 
       '<section class="card cur"><div class="ch"><span class="lbl">Batería ahora</span><span class="val" id="vCur"></span></div>' +
@@ -277,10 +277,11 @@
     var el = $("res"); if (!el) return;
     var o = compute();
     if (!o) { el.innerHTML = '<p class="msg warn">Revisa la batería, la potencia y el rendimiento en Ajustes.</p>'; return; }
-    var mini = '<div class="mini" aria-hidden="true"><span class="mnum">' + nf(num(S.cur, 0), 0) + ' → ' + nf(num(S.tgt, 0), 0) + ' %</span><span class="mbar"><i class="ma"></i><i class="mb"></i></span></div>';
+    var mini = '<div class="mini" aria-hidden="true"><span class="mbar"><i class="ma"></i><i class="mb"></i></span></div>';
+    var inst = isStandalone() ? '' : '<button type="button" class="instbtn" id="instBtn" aria-label="Instalar la app"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg><span>Instalar</span></button>';
     var head = sim
-      ? '<div class="ebrow"><div class="eyebrow">Si lo enchufas a las ' + o.l1v + ' · ' + o.l2 + '</div>' + mini + '</div><div class="rbig l2' + (o.reached ? '' : ' bad') + ' main">' + o.l2v + '</div>'
-      : '<div class="ebrow"><div class="eyebrow">' + o.l1 + ' · ' + o.l1day + '</div>' + mini + '</div><div class="rbig l1 main">' + o.l1v + '</div>';
+      ? '<div class="ebrow"><div class="eyebrow">Si lo enchufas a las ' + o.l1v + ' · ' + o.l2 + '</div>' + inst + '</div><div class="rbig l2' + (o.reached ? '' : ' bad') + ' main">' + o.l2v + '</div>'
+      : '<div class="ebrow"><div class="eyebrow">' + o.l1 + ' · ' + o.l1day + '</div>' + inst + '</div><div class="rbig l1 main">' + o.l1v + '</div>';
     var tipo = cheapest(o.det);
     var tip = tipo ? '<div class="tip"><span>Más barato: enchufa a las <b>' + tipo.time + '</b> (' + tipo.day + ') y ahorras <b>' + money(tipo.saving) + '</b>. Cargado a las ' + tipo.end + '.</span><button type="button" class="link" id="tipBtn" data-t="' + tipo.time + '">Probar</button></div>' : '';
     var links = sim
@@ -290,7 +291,7 @@
       '<p class="msg ' + o.kind + '">' + o.text + '</p>' +
       '<div class="costline"><span class="cost">' + money(o.total) + '</span><span class="break">con impuestos' + (o.chargedMin > 0 ? ' · ' + durText(o.chargedMin) + ' · ' + kwhText(o.kwhGridDone) : '') + '</span></div>' +
       tip + links +
-      '<div class="links"><button type="button" class="link" id="simBtn">Otra hora de enchufe</button><button type="button" class="link" id="howBtn">Cómo se calcula</button></div>';
+      '<div class="links"><button type="button" class="link" id="simBtn">Otra hora de enchufe</button><button type="button" class="link" id="howBtn">Cómo se calcula</button>' + mini + '</div>';
     el.className = "hero " + o.kind;
     var ma = el.querySelector(".ma"), mb = el.querySelector(".mb"), c0 = Math.max(0, Math.min(100, num(S.cur, 0))), t0 = Math.max(0, Math.min(100, num(S.tgt, 0)));
     if (ma && mb) { ma.style.width = c0 + "%"; mb.style.left = c0 + "%"; mb.style.width = Math.max(0, t0 - c0) + "%"; }
