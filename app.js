@@ -138,7 +138,8 @@
       h += '<div class="field"><label for="model">Modelo</label><select id="model">' + brandModels(S.brand).map(function (m) { return '<option value="' + esc(m[0]) + '"' + (m[0] === S.model ? ' selected' : '') + '>' + esc(m[0]) + ' · ' + nf(m[1], 1) + ' kWh</option>'; }).join("") + '</select></div>';
     }
     h += '<div class="field"><label for="bat">Batería útil (kWh)</label><input type="number" id="bat" inputmode="decimal" min="1" step="0.5" value="' + S.bat + '"></div>';
-    h += '<p class="hint">' + (S.brand === OTHER ? 'Búscala en la ficha técnica del coche. Es la capacidad útil, no la bruta.' : 'Capacidad útil orientativa del modelo. Si conoces la tuya, cámbiala.') + '</p></div>';
+    h += '<p class="hint">' + (S.brand === OTHER ? 'Búscala en la ficha técnica del coche. Es la capacidad útil, no la bruta.' : 'Capacidad útil orientativa del modelo, la de una batería nueva. Si conoces la tuya, cámbiala.') + '</p>' +
+      '<p class="hint warnhint"><b>Ojo con el desgaste.</b> Con los años la batería pierde capacidad. Si ya la ha perdido, cargar el mismo porcentaje necesita menos kWh de los que calculo: la hora de enchufe saldrá algo antes de lo necesario y el coste algo más alto. Es un error del lado seguro, pero puedes afinarlo bajando los kWh.</p></div>';
     return h;
   }
   function pwBody() {
@@ -325,7 +326,7 @@
   function explainHtml() {
     var o = compute(); if (!o) return "<p>Faltan datos.</p>";
     var d = o.det, h = '<ol>';
-    h += '<li><b>Energía que falta en la batería.</b> (' + nf(d.tgt, 0) + ' % − ' + nf(d.cur, 0) + ' %) × ' + nf(d.bat, 1) + ' kWh = <b>' + kwhText(d.kwhBat) + '</b>.</li>';
+    h += '<li><b>Energía que falta en la batería.</b> (' + nf(d.tgt, 0) + ' % − ' + nf(d.cur, 0) + ' %) × ' + nf(d.bat, 1) + ' kWh = <b>' + kwhText(d.kwhBat) + '</b>. Uso la capacidad de una batería nueva: si la tuya ha perdido capacidad, la energía real será algo menor.</li>';
     h += '<li><b>Energía que sale de la red.</b> ' + kwhText(d.kwhBat) + ' ÷ ' + nf(d.eff * 100, 0) + ' % de rendimiento = <b>' + kwhText(d.kwhGrid) + '</b>. Una parte se pierde en el cargador y en el coche.</li>';
     h += '<li><b>Tiempo de carga.</b> ' + kwhText(d.kwhGrid) + ' ÷ ' + nf(d.pw, 2) + ' kW = <b>' + durText(d.durMin) + '</b>.</li>';
     var st;
@@ -428,7 +429,7 @@
   function aboutBody() {
     return '<div class="card"><p class="hint"><b>Valores orientativos.</b> Las horas y el coste dependen de tu coche, tu cargador y tu tarifa, y pueden diferir de la realidad. Comprueba siempre que el coche queda cargado.</p>' +
       '<p class="hint"><b>Privacidad.</b> No hay cuentas ni cookies, y no se envía ningún dato a ningún servidor. Lo que escribes se guarda solo en este dispositivo y puedes borrarlo con «Borrar esta configuración».</p>' +
-      '<p class="hint">Las capacidades de batería son valores útiles orientativos tomados de ev-database.org. Consulta la ficha de tu coche para el dato exacto.</p></div>';
+      '<p class="hint">Las capacidades de batería son valores útiles orientativos tomados de ev-database.org. Corresponden a una batería nueva: con el desgaste la capacidad baja y los cálculos se vuelven algo conservadores. Consulta la ficha de tu coche para el dato exacto.</p></div>';
   }
   window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); deferredPrompt = e; if (view === "settings") draw(true); });
   window.addEventListener("appinstalled", function () { deferredPrompt = null; if (view === "settings") draw(true); });

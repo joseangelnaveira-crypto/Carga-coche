@@ -389,3 +389,8 @@ kbd { font: inherit; font-size: 0.78rem; font-weight: 600; padding: 1px 6px; bor
 @media (prefers-reduced-motion: reduce) { .fold > summary::after { transition: none; } }
 
 .grid .btn { white-space: nowrap; padding-left: 2px; padding-right: 2px; font-size: 0.92rem; }
+
+.hint.warnhint { padding: 8px 10px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); }
+.hint.warnhint b { color: inherit; }
+
+body { background: linear-gradient(180deg, var(--bg) 0, color-mix(in srgb, var(--accent) 7%, var(--bg)) 45%, var(--bg) 100%) no-repeat; background-size: 100% 100dvh; background-color: var(--bg); }
