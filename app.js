@@ -398,11 +398,24 @@
   function isStandalone() { return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true; }
   function isIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); }
   function installBody() {
+    var ios = isIOS();
+    var steps = {
+      ios: '<div class="os' + (ios ? ' me' : '') + '"><h3>iPhone y iPad' + (ios ? ' <em>tu móvil</em>' : '') + '</h3><ol>' +
+        '<li>Abre esta página en <b>Safari</b> (no en Chrome ni dentro de otra app).</li>' +
+        '<li>Toca <b>Compartir</b>, el cuadrado con una flecha hacia arriba.</li>' +
+        '<li>Desliza y elige <b>«Añadir a pantalla de inicio»</b>.</li>' +
+        '<li>Toca <b>«Añadir»</b>. Ábrela desde el icono nuevo.</li></ol></div>',
+      and: '<div class="os' + (!ios ? ' me' : '') + '"><h3>Android' + (!ios ? ' <em>tu móvil</em>' : '') + '</h3><ol>' +
+        '<li>Abre esta página en <b>Chrome</b>.</li>' +
+        '<li>Toca el menú <b>⋮</b> de arriba a la derecha.</li>' +
+        '<li>Elige <b>«Instalar aplicación»</b> o «Añadir a pantalla de inicio».</li>' +
+        '<li>Confirma con <b>«Instalar»</b>. Ábrela desde el icono nuevo.</li></ol></div>'
+    };
     var h = '<div class="card install">';
-    if (isStandalone()) h += '<p class="hint">La app ya está instalada en este móvil.</p>';
-    else if (deferredPrompt) h += '<button type="button" class="next" id="installBtn">Instalar la app</button><p class="hint">Se guarda en el móvil y funciona sin conexión.</p>';
-    else if (isIOS()) h += '<p class="hint"><b>iPhone / iPad:</b> abre esta página en Safari, pulsa el botón Compartir y elige «Añadir a pantalla de inicio». Después ábrela desde el icono.</p>';
-    else h += '<p class="hint"><b>Android:</b> en Chrome, abre el menú ⋮ y elige «Instalar aplicación» o «Añadir a pantalla de inicio».</p>';
+    if (isStandalone()) return h + '<p class="hint"><b>Ya está instalada</b> en este móvil. Funciona sin conexión.</p></div>';
+    if (deferredPrompt) h += '<button type="button" class="next" id="installBtn">Instalar la app</button><p class="hint">Se guarda en el móvil y funciona sin conexión. O sigue estos pasos:</p>';
+    h += ios ? steps.ios + steps.and : steps.and + steps.ios;
+    h += '<p class="hint">Si ves una versión antigua, cierra la app del todo y ábrela dos veces con conexión.</p>';
     return h + '</div>';
   }
   function aboutBody() {
