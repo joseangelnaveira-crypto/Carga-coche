@@ -202,7 +202,7 @@
     function mainHtml() {
     var tb = function (key, arr) { return arr.map(function (o) { return '<button type="button" class="btn" data-time="' + key + '" data-d="' + o[0] + '">' + o[1] + '</button>'; }).join(""); };
     return '<div class="ctxrow"><button type="button" class="ctxbtn" id="carbtn"><span><svg class="car" viewBox="0 0 28 16" width="26" height="15" aria-hidden="true"><path d="M3 11.5 5 6.5Q6 4.5 9 4.5H17Q19 4.5 20.5 6.5L24 8.5Q26 9 26 11.5V12.5H3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="8" cy="13" r="2.3" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/><circle cx="21" cy="13" r="2.3" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/></svg> ' + esc(profileName()) + '</span><span class="m">Cambiar</span></button>' +
-      '<button type="button" class="setbtn" id="setbtn">Ajustes</button></div><div class="hero" id="res" aria-live="polite"></div>' +
+      '<button type="button" class="setbtn" id="setbtn" aria-label="Ajustes" title="Ajustes">Ajustes</button></div><div class="hero" id="res" aria-live="polite"></div>' +
       '<div class="ctl">' +
 
       '<section class="card cur"><div class="ch"><span class="lbl">Batería ahora</span><span class="val" id="vCur"></span></div>' +
