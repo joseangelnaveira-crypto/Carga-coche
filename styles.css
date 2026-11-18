@@ -288,3 +288,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 /* TEMPORAL: botón refrescar */
 .setbtn.tmp { font-size: 1.3rem; line-height: 1; color: var(--accent); }
 .setbtn.tmp::before { display: none; }
+
+/* Sin zoom por doble toque al pulsar rápido los botones (el zoom con dos dedos sigue funcionando) */
+html, body, button, .val.tap { touch-action: manipulation; }
+button, .val.tap, .eyebrow, .lbl, .val { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
