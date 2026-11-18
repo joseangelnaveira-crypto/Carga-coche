@@ -284,3 +284,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .hero .costline { flex-wrap: nowrap; }
 .hero .cost { flex: none; }
 .hero .break { font-size: 0.74rem; line-height: 1.25; }
+
+/* TEMPORAL: botón refrescar */
+.setbtn.tmp { font-size: 1.3rem; line-height: 1; color: var(--accent); }
+.setbtn.tmp::before { display: none; }
