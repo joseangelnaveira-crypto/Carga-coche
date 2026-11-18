@@ -26,9 +26,9 @@
   ];
   var OTHER = "Otro / no está en la lista";
 
-  var CONFIG_KEYS = ["brand", "model", "bat", "pw", "eff", "margin", "startMode", "startAt", "pValle", "pOtro", "vStart", "vEnd", "iee", "iva"];
+  var CONFIG_KEYS = ["brand", "model", "bat", "soh", "pw", "eff", "margin", "startMode", "startAt", "pValle", "pOtro", "vStart", "vEnd", "iee", "iva"];
   var DEFAULTS = {
-    brand: "Tesla", model: "Model 3 RWD Highland", bat: 60,
+    brand: "Tesla", model: "Model 3 RWD Highland", bat: 60, soh: 100,
     pw: 2.95, eff: 90, margin: 30, startMode: "auto", startAt: "23:00",
     pValle: 0.08, pOtro: 0.20, vStart: "00:00", vEnd: "08:00", iee: 5.11, iva: 21,
     cur: 30, tgt: 80, need: "07:30",
@@ -39,7 +39,7 @@
   var $ = function (id) { return document.getElementById(id); };
 
   /* Todo lo que se lee del almacenamiento se valida: tipo, rango y formato */
-  var RANGES = { bat: [1, 300], pw: [0.5, 50], eff: [50, 100], margin: [0, 240], pValle: [0, 10], pOtro: [0, 10], iee: [0, 100], iva: [0, 100], cur: [0, 100], tgt: [0, 100] };
+  var RANGES = { bat: [1, 300], soh: [50, 100], pw: [0.5, 50], eff: [50, 100], margin: [0, 240], pValle: [0, 10], pOtro: [0, 10], iee: [0, 100], iva: [0, 100], cur: [0, 100], tgt: [0, 100] };
   var TIMES = ["startAt", "vStart", "vEnd", "need"];
   function cleanConfig(c) {
     var o = {};
@@ -139,7 +139,9 @@
     }
     h += '<div class="field"><label for="bat">Batería útil (kWh)</label><input type="number" id="bat" inputmode="decimal" min="1" step="0.5" value="' + S.bat + '"></div>';
     h += '<p class="hint">' + (S.brand === OTHER ? 'Búscala en la ficha técnica del coche. Es la capacidad útil, no la bruta.' : 'Capacidad útil orientativa del modelo, la de una batería nueva. Si conoces la tuya, cámbiala.') + '</p>' +
-      '<p class="hint warnhint"><b>Ojo con el desgaste.</b> Con los años la batería pierde capacidad. Si ya la ha perdido, cargar el mismo porcentaje necesita menos kWh de los que calculo: la hora de enchufe saldrá algo antes de lo necesario y el coste algo más alto. Es un error del lado seguro, pero puedes afinarlo bajando los kWh.</p></div>';
+      '<div class="field"><label for="soh">Salud de la batería (%)</label><input type="number" id="soh" inputmode="decimal" min="50" max="100" step="1" value="' + S.soh + '"></div>' +
+      btns([[100, "100 %", "Nueva"], [97, "97 %"], [94, "94 %"], [90, "90 %"]], S.soh, "soh", 4) +
+      '<p class="hint warnhint"><b>Salud de la batería.</b> Los kWh de arriba son los de una batería nueva. Con los años pierde capacidad: baja este porcentaje y la hora de enchufe y el coste se ajustan. Si no lo sabes, deja 100 %.</p></div>';
     return h;
   }
   function pwBody() {
@@ -222,7 +224,7 @@
   /* ---------- Cálculo ---------- */
   function compute() {
     var now = new Date(Math.floor(Date.now() / 60000) * 60000);
-    var pw = num(S.pw, 0), eff = num(S.eff, 90) / 100, bat = num(S.bat, 60), cur = num(S.cur, 0), tgt = num(S.tgt, 0);
+    var pw = num(S.pw, 0), eff = num(S.eff, 90) / 100, batNom = num(S.bat, 60), sohv = Math.max(50, Math.min(100, num(S.soh, 100))), bat = batNom * sohv / 100, cur = num(S.cur, 0), tgt = num(S.tgt, 0);
     if (!(pw > 0) || !(eff > 0) || !(bat > 0)) return null;
     var kwhBat = Math.max(0, (tgt - cur) / 100 * bat), kwhGrid = kwhBat / eff, durMin = kwhGrid / pw * 60, margin = Math.max(0, num(S.margin, 0));
 
@@ -271,7 +273,7 @@
       l2: reached ? "Cargado a las" : "A las " + hm(need) + " tendrás",
       l2v: reached ? hm(fullEnd) : nf(pctFinal, 0) + " %",
       l2day: reached ? dayLabel(fullEnd, now) : "no llega",
-      reached: reached, det: { now: now, kwhBat: kwhBat, kwhGrid: kwhGrid, durMin: durMin, eff: eff, pw: pw, bat: bat, cur: cur, tgt: tgt, margin: margin, effStart: effStart, fullEnd: fullEnd, need: need, smode: smode, idealPassed: idealPassed, idealText: idealText, base: base, withIee: withIee, total: total, chargedMin: chargedMin, pctFinal: pctFinal, realMargin: realMargin }, kind: kind, text: text, total: total, base: base, withIee: withIee, chargedMin: chargedMin, kwhGridDone: kwhGridDone, pctFinal: pctFinal
+      reached: reached, det: { now: now, kwhBat: kwhBat, kwhGrid: kwhGrid, durMin: durMin, eff: eff, pw: pw, bat: bat, batNom: batNom, soh: sohv, cur: cur, tgt: tgt, margin: margin, effStart: effStart, fullEnd: fullEnd, need: need, smode: smode, idealPassed: idealPassed, idealText: idealText, base: base, withIee: withIee, total: total, chargedMin: chargedMin, pctFinal: pctFinal, realMargin: realMargin }, kind: kind, text: text, total: total, base: base, withIee: withIee, chargedMin: chargedMin, kwhGridDone: kwhGridDone, pctFinal: pctFinal
     };
   }
 
@@ -326,7 +328,7 @@
   function explainHtml() {
     var o = compute(); if (!o) return "<p>Faltan datos.</p>";
     var d = o.det, h = '<ol>';
-    h += '<li><b>Energía que falta en la batería.</b> (' + nf(d.tgt, 0) + ' % − ' + nf(d.cur, 0) + ' %) × ' + nf(d.bat, 1) + ' kWh = <b>' + kwhText(d.kwhBat) + '</b>. Uso la capacidad de una batería nueva: si la tuya ha perdido capacidad, la energía real será algo menor.</li>';
+    h += '<li><b>Energía que falta en la batería.</b> (' + nf(d.tgt, 0) + ' % − ' + nf(d.cur, 0) + ' %) × ' + (d.soh < 100 ? nf(d.batNom, 1) + ' kWh × ' + nf(d.soh, 0) + ' % de salud = ' : '') + nf(d.bat, 1) + ' kWh = <b>' + kwhText(d.kwhBat) + '</b>. ' + (d.soh < 100 ? 'Aplico la salud de la batería que has indicado.' : 'Uso la capacidad de una batería nueva: si la tuya ha perdido capacidad, baja «Salud de la batería» en Ajustes.') + '</li>';
     h += '<li><b>Energía que sale de la red.</b> ' + kwhText(d.kwhBat) + ' ÷ ' + nf(d.eff * 100, 0) + ' % de rendimiento = <b>' + kwhText(d.kwhGrid) + '</b>. Una parte se pierde en el cargador y en el coche.</li>';
     h += '<li><b>Tiempo de carga.</b> ' + kwhText(d.kwhGrid) + ' ÷ ' + nf(d.pw, 2) + ' kW = <b>' + durText(d.durMin) + '</b>.</li>';
     var st;
@@ -519,7 +521,7 @@
       $(id === "rCur" ? "vCur" : "vTgt").textContent = Math.round(S[key]) + " %"; syncCtl(); renderRes(); return;
     }
     if (id === "pwin") { S.pw = clampKey("pw", num(el.value, S.pw)); touch("pw"); return; }
-    if (["bat", "eff", "pValle", "pOtro", "iee", "iva"].indexOf(id) >= 0) { S[id] = el.value === "" ? "" : clampKey(id, parseFloat(el.value)); touch(id); return; }
+    if (["bat", "soh", "eff", "pValle", "pOtro", "iee", "iva"].indexOf(id) >= 0) { S[id] = el.value === "" ? "" : clampKey(id, parseFloat(el.value)); touch(id); return; }
     if (["vStart", "vEnd"].indexOf(id) >= 0 && el.value) { S[id] = el.value; touch(id); }
   });
 
