@@ -378,3 +378,14 @@ kbd { font: inherit; font-size: 0.78rem; font-weight: 600; padding: 1px 6px; bor
 
 .ctxbtn .appico { width: 26px; height: 26px; border-radius: 7px; vertical-align: -8px; margin-right: 8px; flex: none; }
 @media (max-height: 640px) { .ctxbtn .appico { width: 24px; height: 24px; vertical-align: -7px; } }
+
+/* Desplegable de instalacion */
+.fold { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+.fold > summary { list-style: none; cursor: pointer; padding: 14px; font-family: var(--font-display); font-weight: 600; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; min-height: 52px; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary::after { content: ""; width: 9px; height: 9px; border-right: 2.5px solid var(--accent); border-bottom: 2.5px solid var(--accent); transform: rotate(45deg); transition: transform 0.2s; margin-right: 4px; }
+.fold[open] > summary::after { transform: rotate(-135deg); }
+.fold > .card { border: 0; border-top: 1px solid var(--line); border-radius: 0; box-shadow: none; background: transparent; }
+@media (prefers-reduced-motion: reduce) { .fold > summary::after { transition: none; } }
+
+.grid .btn { white-space: nowrap; padding-left: 2px; padding-right: 2px; font-size: 0.92rem; }

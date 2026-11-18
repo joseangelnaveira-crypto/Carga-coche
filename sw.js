@@ -1,6 +1,6 @@
 /* Service worker: guarda la app en el móvil para que funcione sin conexión.
    Para publicar una versión nueva, cambia el número de CACHE (p. ej. v2). */
-const CACHE = "carga-coche-v14";
+const CACHE = "carga-coche-v15";
 const ASSETS = [
   "./", "index.html", "styles.css", "app.js", "manifest.webmanifest",
   "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/apple-touch-icon.png",
@@ -9,7 +9,12 @@ const ASSETS = [
 ];
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  /* cache: "reload" evita copiar archivos viejos de la cache HTTP del navegador (GitHub Pages los guarda unos 10 min) */
+  e.waitUntil(
+    caches.open(CACHE)
+      .then((c) => Promise.all(ASSETS.map((a) => fetch(new Request(a, { cache: "reload" })).then((r) => { if (!r.ok) throw new Error(a); return c.put(a, r); }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener("activate", (e) => {
@@ -28,7 +33,7 @@ self.addEventListener("fetch", (e) => {
   if (url.origin !== self.location.origin) return;
   e.respondWith(
     caches.match(req, { ignoreSearch: true }).then((hit) => {
-      const net = fetch(req)
+      const net = fetch(req.url, { cache: "no-cache" })
         .then((res) => {
           if (res && res.ok && res.type === "basic") {
             const copy = res.clone();

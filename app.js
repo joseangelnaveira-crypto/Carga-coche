@@ -34,7 +34,7 @@
     cur: 30, tgt: 80, need: "07:30",
     profiles: [], active: null
   };
-  var lastBig = null;
+  var lastBig = null, instOpen = false, reloaded = false;
   var S = {}, view = "main", setupIdx = 0, delArm = false, sim = null;
   var $ = function (id) { return document.getElementById(id); };
 
@@ -81,6 +81,7 @@
   function hm(d) { return pad(d.getHours()) + ":" + pad(d.getMinutes()); }
   function toMin(s) { var p = String(s || "").split(":"); return (parseInt(p[0], 10) || 0) * 60 + (parseInt(p[1], 10) || 0); }
   function addMin(hhmm, d) { var m = (((toMin(hhmm) + d) % 1440) + 1440) % 1440; return pad(Math.floor(m / 60)) + ":" + pad(m % 60); }
+  function clampKey(k, v) { var r = RANGES[k]; return (r && isFinite(v)) ? Math.max(r[0], Math.min(r[1], v)) : v; }
   function num(v, d) { var n = parseFloat(v); return isNaN(n) ? d : n; }
   function nf(v, d) { return v.toLocaleString("es-ES", { maximumFractionDigits: d }); }
   function money(v) { return v.toLocaleString("es-ES", { style: "currency", currency: "EUR" }); }
@@ -99,7 +100,7 @@
   function nextAfter(base, hhmm) {
     var m = toMin(hhmm), d = new Date(base.getTime());
     d.setHours(Math.floor(m / 60), m % 60, 0, 0);
-    if (d.getTime() <= base.getTime()) d = new Date(d.getTime() + 86400000);
+    if (d.getTime() <= base.getTime()) { d.setDate(d.getDate() + 1); d.setHours(Math.floor(m / 60), m % 60, 0, 0); }
     return d;
   }
   function inValle(md) {
@@ -187,7 +188,7 @@
 
   function settingsHtml() {
     return '<div class="page"><div class="head"><button type="button" class="back" id="done" aria-label="Volver">‹</button><div class="t">Ajustes</div></div>' +
-      '<h2 class="s">Cuándo enchufar</h2>' + plugBody() + '<h2 class="s">Coche</h2>' + carBody() + '<h2 class="s">Cargador</h2>' + pwBody() + '<h2 class="s">Tarifa e impuestos</h2>' + tariffBody() + '<h2 class="s">Instalar la app y favoritos</h2>' + installBody() + '<h2 class="s">Acerca de</h2>' + aboutBody() +
+      '<h2 class="s">Cuándo enchufar</h2>' + plugBody() + '<h2 class="s">Coche</h2>' + carBody() + '<h2 class="s">Cargador</h2>' + pwBody() + '<h2 class="s">Tarifa e impuestos</h2>' + tariffBody() + '<details class="fold" id="instFold"' + (instOpen ? ' open' : '') + '><summary>Instalar la app y favoritos</summary>' + installBody() + '</details>' + '<h2 class="s">Acerca de</h2>' + aboutBody() +
       '<div class="foot"><button type="button" class="next" id="done2">Listo</button>' +
       '<button type="button" class="del" id="del">' + (delArm ? "Pulsa otra vez para borrar" : "Borrar esta configuración") + '</button></div></div>';
   }
@@ -229,7 +230,7 @@
     if (smode === "manual") {
       var m = toMin(sat);
       effStart = new Date(now.getTime()); effStart.setHours(Math.floor(m / 60), m % 60, 0, 0);
-      if (effStart.getTime() < now.getTime()) effStart = new Date(effStart.getTime() + 86400000);
+      if (effStart.getTime() < now.getTime()) { effStart.setDate(effStart.getDate() + 1); effStart.setHours(Math.floor(m / 60), m % 60, 0, 0); }
       need = nextAfter(effStart, S.need); startShown = effStart;
     } else if (smode === "now") {
       effStart = now; need = nextAfter(now, S.need); startShown = now;
@@ -433,6 +434,17 @@
   window.addEventListener("appinstalled", function () { deferredPrompt = null; if (view === "settings") draw(true); });
   if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
 
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape") { if (!$("sheet").hidden) closeWheel(); if (!$("info").hidden) $("info").hidden = true; } });
+  document.addEventListener("toggle", function (ev) { if (ev.target && ev.target.id === "instFold") instOpen = ev.target.open; }, true);
+  if ("serviceWorker" in navigator) {
+    var hadCtl = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener("controllerchange", function () {
+      if (!hadCtl || reloaded) return;
+      reloaded = true;
+      if (view === "main" && $("sheet").hidden && $("info").hidden) location.reload();
+    });
+  }
+
   /* ---------- Eventos ---------- */
   document.addEventListener("click", function (ev) {
     if (ev.target.id === "sheet") { closeWheel(); return; }
@@ -505,8 +517,8 @@
       var key = id === "rCur" ? "cur" : "tgt"; S[key] = parseFloat(el.value); save();
       $(id === "rCur" ? "vCur" : "vTgt").textContent = Math.round(S[key]) + " %"; syncCtl(); renderRes(); return;
     }
-    if (id === "pwin") { S.pw = num(el.value, S.pw); touch("pw"); return; }
-    if (["bat", "eff", "pValle", "pOtro", "iee", "iva"].indexOf(id) >= 0) { S[id] = el.value === "" ? "" : parseFloat(el.value); touch(id); return; }
+    if (id === "pwin") { S.pw = clampKey("pw", num(el.value, S.pw)); touch("pw"); return; }
+    if (["bat", "eff", "pValle", "pOtro", "iee", "iva"].indexOf(id) >= 0) { S[id] = el.value === "" ? "" : clampKey(id, parseFloat(el.value)); touch(id); return; }
     if (["vStart", "vEnd"].indexOf(id) >= 0 && el.value) { S[id] = el.value; touch(id); }
   });
 
