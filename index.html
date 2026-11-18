@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Calcula a qué hora poner a cargar el coche eléctrico para tenerlo cargado a la hora que lo necesitas.">
+<meta name="theme-color" content="#f1f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1a20" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Carga coche">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Carga del coche</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app" id="root"></div>
+<div class="sheet" id="info" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-label="Cómo se calcula">
+    <div class="wtitle">Cómo se calcula</div>
+    <div class="how" id="howBody"></div>
+    <button type="button" class="next" id="infoOk">Entendido</button>
+  </div>
+</div>
+<div class="sheet" id="sheet" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-label="Elegir hora">
+    <div class="wtitle" id="wtitle">Hora</div>
+    <div class="wheels">
+      <div class="band"></div>
+      <div class="wcol" id="wH" tabindex="0" aria-label="Horas"></div>
+      <div class="colon">:</div>
+      <div class="wcol" id="wM" tabindex="0" aria-label="Minutos"></div>
+    </div>
+    <button type="button" class="next" id="sheetOk">Listo</button>
+    <button type="button" class="ghost" id="sheetCancel">Cancelar</button>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
