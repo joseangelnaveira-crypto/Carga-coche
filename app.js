@@ -34,6 +34,7 @@
     cur: 30, tgt: 80, need: "07:30",
     profiles: [], active: null
   };
+  var lastBig = null;
   var S = {}, view = "main", setupIdx = 0, delArm = false, sim = null;
   var $ = function (id) { return document.getElementById(id); };
 
@@ -202,7 +203,7 @@
     function mainHtml() {
     var tb = function (key, arr) { return arr.map(function (o) { return '<button type="button" class="btn" data-time="' + key + '" data-d="' + o[0] + '">' + o[1] + '</button>'; }).join(""); };
     return '<div class="ctxrow"><button type="button" class="ctxbtn" id="carbtn"><span><svg class="car" viewBox="0 0 28 16" width="26" height="15" aria-hidden="true"><path d="M3 11.5 5 6.5Q6 4.5 9 4.5H17Q19 4.5 20.5 6.5L24 8.5Q26 9 26 11.5V12.5H3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="8" cy="13" r="2.3" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/><circle cx="21" cy="13" r="2.3" fill="var(--surface)" stroke="currentColor" stroke-width="1.6"/></svg> ' + esc(profileName()) + '</span><span class="m">Cambiar</span></button>' +
-      '<button type="button" class="setbtn tmp" id="refbtn" aria-label="Refrescar" title="Refrescar">&#8635;</button><button type="button" class="setbtn" id="setbtn" aria-label="Ajustes" title="Ajustes">Ajustes</button></div><div class="hero" id="res" aria-live="polite"></div>' +
+      (isStandalone() ? '' : '<button type="button" class="instbtn" id="instBtn" aria-label="Instalar la app"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg><span>Instalar</span></button>') + '<button type="button" class="setbtn tmp" id="refbtn" aria-label="Refrescar" title="Refrescar">&#8635;</button><button type="button" class="setbtn" id="setbtn" aria-label="Ajustes" title="Ajustes">Ajustes</button></div><div class="hero" id="res" aria-live="polite"></div>' +
       '<div class="ctl">' +
 
       '<section class="card cur"><div class="ch"><span class="lbl">Batería ahora</span><span class="val" id="vCur"></span></div>' +
@@ -276,9 +277,10 @@
     var el = $("res"); if (!el) return;
     var o = compute();
     if (!o) { el.innerHTML = '<p class="msg warn">Revisa la batería, la potencia y el rendimiento en Ajustes.</p>'; return; }
+    var mini = '<div class="mini" aria-hidden="true"><span class="mnum">' + nf(num(S.cur, 0), 0) + ' → ' + nf(num(S.tgt, 0), 0) + ' %</span><span class="mbar"><i class="ma"></i><i class="mb"></i></span></div>';
     var head = sim
-      ? '<div class="eyebrow">Si lo enchufas a las ' + o.l1v + ' · ' + o.l2 + '</div><div class="rbig l2' + (o.reached ? '' : ' bad') + ' main">' + o.l2v + '</div>'
-      : '<div class="eyebrow">' + o.l1 + ' · ' + o.l1day + '</div><div class="rbig l1 main">' + o.l1v + '</div>';
+      ? '<div class="ebrow"><div class="eyebrow">Si lo enchufas a las ' + o.l1v + ' · ' + o.l2 + '</div>' + mini + '</div><div class="rbig l2' + (o.reached ? '' : ' bad') + ' main">' + o.l2v + '</div>'
+      : '<div class="ebrow"><div class="eyebrow">' + o.l1 + ' · ' + o.l1day + '</div>' + mini + '</div><div class="rbig l1 main">' + o.l1v + '</div>';
     var tipo = cheapest(o.det);
     var tip = tipo ? '<div class="tip"><span>Más barato: enchufa a las <b>' + tipo.time + '</b> (' + tipo.day + ') y ahorras <b>' + money(tipo.saving) + '</b>. Cargado a las ' + tipo.end + '.</span><button type="button" class="link" id="tipBtn" data-t="' + tipo.time + '">Probar</button></div>' : '';
     var links = sim
@@ -288,7 +290,12 @@
       '<p class="msg ' + o.kind + '">' + o.text + '</p>' +
       '<div class="costline"><span class="cost">' + money(o.total) + '</span><span class="break">con impuestos' + (o.chargedMin > 0 ? ' · ' + durText(o.chargedMin) + ' · ' + kwhText(o.kwhGridDone) : '') + '</span></div>' +
       tip + links +
-      '<div class="links"><button type="button" class="link" id="simBtn">Otra hora de enchufe</button><button type="button" class="link" id="howBtn">Cómo se calcula</button>' + (isStandalone() ? '' : '<button type="button" class="link" id="instBtn">Instalar app</button>') + '</div>';
+      '<div class="links"><button type="button" class="link" id="simBtn">Otra hora de enchufe</button><button type="button" class="link" id="howBtn">Cómo se calcula</button></div>';
+    el.className = "hero " + o.kind;
+    var ma = el.querySelector(".ma"), mb = el.querySelector(".mb"), c0 = Math.max(0, Math.min(100, num(S.cur, 0))), t0 = Math.max(0, Math.min(100, num(S.tgt, 0)));
+    if (ma && mb) { ma.style.width = c0 + "%"; mb.style.left = c0 + "%"; mb.style.width = Math.max(0, t0 - c0) + "%"; }
+    var big = el.querySelector(".rbig.main");
+    if (big) { if (lastBig !== null && lastBig !== big.textContent) big.classList.add("tick"); lastBig = big.textContent; }
   }
 
 
@@ -339,6 +346,8 @@
     $("vNeed").textContent = S.need;
     $("rCur").value = num(S.cur, 0);
     $("rTgt").value = num(S.tgt, 0);
+    $("rCur").style.setProperty("--p", num(S.cur, 0) + "%");
+    $("rTgt").style.setProperty("--p", num(S.tgt, 0) + "%");
     Array.prototype.forEach.call(document.querySelectorAll("#root [data-set]"), function (b) {
       var k = b.getAttribute("data-set");
       if (k === "tgt") b.setAttribute("aria-pressed", String(String(S[k]) === b.getAttribute("data-v")));
@@ -397,17 +406,19 @@
   var deferredPrompt = null;
   function isStandalone() { return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true; }
   function isIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); }
+  var ICO_SHARE = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M8.5 7.5 12 4l3.5 3.5M7 10H6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>';
+  var ICO_DOTS = '<svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
   function installBody() {
     var ios = isIOS(), android = !ios && /android/i.test(navigator.userAgent), pc = !ios && !android;
-    var box = function (me, title, items) { return '<div class="os' + (me ? ' me' : '') + '"><h3>' + title + (me ? ' <em>tu dispositivo</em>' : '') + '</h3><ol>' + items.map(function (t) { return '<li>' + t + '</li>'; }).join("") + '</ol></div>'; };
+    var box = function (me, title, sub, items) { return '<div class="os' + (me ? ' me' : '') + '"><h3>' + title + (me ? ' <em>tu dispositivo</em>' : '') + '</h3><p class="osub">' + sub + '</p><ol>' + items.map(function (t) { return '<li>' + t + '</li>'; }).join("") + '</ol></div>'; };
     var steps = {
-      ios: box(ios, "iPhone y iPad", ['Abre esta página en <b>Safari</b> (no en Chrome ni dentro de otra app).', 'Toca <b>Compartir</b>, el cuadrado con una flecha hacia arriba.', 'Desliza y elige <b>«Añadir a pantalla de inicio»</b>.', 'Toca <b>«Añadir»</b>. Ábrela desde el icono nuevo.']),
-      and: box(android, "Android", ['Abre esta página en <b>Chrome</b>.', 'Toca el menú <b>⋮</b> de arriba a la derecha.', 'Elige <b>«Instalar aplicación»</b> o «Añadir a pantalla de inicio».', 'Confirma con <b>«Instalar»</b>. Ábrela desde el icono nuevo.']),
-      pc: box(pc, "Ordenador", ['<b>Favoritos:</b> pulsa <b>Ctrl + D</b> (en Mac, <b>Cmd + D</b>) y guarda la página.', '<b>Instalar como app</b> (Chrome o Edge): pulsa el icono de instalar que sale a la derecha de la barra de direcciones, o el menú ⋮ → «Instalar Carga del coche».', '<b>Safari en Mac:</b> Archivo → «Añadir al Dock».'])
+      ios: box(ios, "iPhone y iPad", "Solo desde Safari", ['Abre esta página en <b>Safari</b> (no en Chrome ni dentro de otra app).', 'Toca <b>Compartir</b> ' + ICO_SHARE + ' en la barra inferior.', 'Desliza y elige <b>«Añadir a pantalla de inicio»</b>.', 'Toca <b>«Añadir»</b>. Ábrela desde el icono nuevo.']),
+      and: box(android, "Android", "Con Chrome", ['Abre esta página en <b>Chrome</b>.', 'Toca el menú ' + ICO_DOTS + ' de arriba a la derecha.', 'Elige <b>«Instalar aplicación»</b> o «Añadir a pantalla de inicio».', 'Confirma con <b>«Instalar»</b>. Ábrela desde el icono nuevo.']),
+      pc: box(pc, "Ordenador", "Favoritos o app", ['<b>Favoritos:</b> pulsa <kbd>Ctrl</kbd> + <kbd>D</kbd> (en Mac, <kbd>Cmd</kbd> + <kbd>D</kbd>) y guarda la página.', '<b>Instalar como app</b> (Chrome o Edge): icono de instalar a la derecha de la barra de direcciones, o menú ' + ICO_DOTS + ' → «Instalar Carga del coche».', '<b>Safari en Mac:</b> Archivo → «Añadir al Dock».'])
     };
     var h = '<div class="card install">';
     if (isStandalone()) return h + '<p class="hint"><b>Ya está instalada</b> en este dispositivo. Funciona sin conexión.</p></div>';
-    if (deferredPrompt) h += '<button type="button" class="next" id="installBtn">Instalar la app</button><p class="hint">Se guarda en el dispositivo y funciona sin conexión. O sigue estos pasos:</p>';
+    if (deferredPrompt) h += '<button type="button" class="next" id="installBtn">Instalar la app ahora</button><p class="hint">Se guarda en el dispositivo y funciona sin conexión. O sigue estos pasos:</p>';
     h += ios ? steps.ios + steps.and + steps.pc : android ? steps.and + steps.ios + steps.pc : steps.pc + steps.and + steps.ios;
     h += '<p class="hint">Si ves una versión antigua, cierra la app del todo y ábrela dos veces con conexión.</p>';
     return h + '</div>';
